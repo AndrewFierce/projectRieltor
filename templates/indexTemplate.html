@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {% load static %}
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <title>БД просмотр</title>
+        <!-- Bootstrap core CSS -->
+        <link href="{% static 'bootstrap/css/bootstrap.css' %}" rel="stylesheet">
+        <!-- Custom styles for this template -->
+        <link href="{% static 'css/style.css' %}" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.13.1/bootstrap-table.min.css">
+        <link rel="stylesheet" href="{% static 'css/bootstrap-material.css' %}"/>
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/css/bootstrap-editable.css">
+    </head>
+    <body>
+    <ul class="sidebar-nav">
+    {% if user.is_authenticated %}
+        <li>User: {{ user.get_username }}</li>
+        <li><a href="{% url 'logout'%}?next={{request.path}}">Logout</a></li>   
+    {% else %}
+        <li><a href="{% url 'login'%}?next={{request.path}}">Login</a></li>   
+    {% endif %}
+  </ul>
+        <div class="container">
+            <div class="row">
+                <h1 class="text-center">База данных объектов недвижимости</h1>
+				<div class="col-lg-12 col-md-12">
+					<ul class="list-group material-list-group material-list-group_default">
+					  <li class="list-group-item material-list-group__item"><span class="h5">Дата обновления: {{ lastDate|date:"d M Y" }}</span></li>
+					  <li class="list-group-item material-list-group__item"><span class="h5">Всего объектов: {{ premisesCount }}</span></li>
+					</ul>
+				</div>
+                <div class="col-lg-12 addnewnote">
+                    {% block form %}{% endblock %}
+                </div>
+                <div class="clearfix"></div>
+                <div class="col lg-12 addnewuser">
+                    {% block user %}{% endblock %}
+                </div>
+                <div class="col-lg-12">
+                    <div class="btn-group material-btn-group">
+                        <button class="dropdown-toggle material-btn material-dropdown-btn material-btn_success" type="button" data-toggle="dropdown" id="addnoteoruser">Добавить
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu material-dropdown-menu material-dropdown-menu_success">
+                            <li>
+                                <a class="material-dropdown-menu__link" id="btn-new-note">новую запись</a>
+                            </li>
+                            <li>
+                                <a class="material-dropdown-menu__link" id="btn-new-user">нового пользователя</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-12 col-lg-12 col-sm-12 table-ewsponsive">
+                    <table class="table table-striped table-hover" id="table" data-toggle="table" data-filter-control="true" data-sort-name="numberpp" data-sort-order="acs" data-search="true" data-show-export="true" data-detail-view="true" data-detail-formatter="detailFormatterfunction">
+                        <thead> 
+                            <tr> 
+                                <th data-field="id" data-sortable="true">№</th>
+                                {% if perms.rieltor.can_change_premises %}
+                                    <th data-field="types" data-sortable="true" data-editable="true" data-pk="{{premise.id}}">Тип помещения</th>
+                                    <th data-field="address" data-sortable="true" data-editable="true">Адрес</th> 
+                                    <th data-field="telephone" data-sortable="true" data-editable="true">Телефон</th> 
+                                    <th data-field="description" data-sortable="true" data-editable="true">Описание</th>
+                                    <th data-field="photos" data-sortable="true">Фото</th>
+                                    <th data-field="date" data-sortable="true" data-editable="true">Дата добавления</th>
+                                {% else%}
+                                    <th data-field="types" data-sortable="true" data-pk="{{premise.id}}">Тип помещения</th>
+                                    <th data-field="address" data-sortable="true" >Адрес</th> 
+                                    <th data-field="telephone" data-sortable="true" >Телефон</th> 
+                                    <th data-field="description" data-sortable="true" >Описание</th>
+                                    <th data-field="photos" data-sortable="true">Фото</th>
+                                    <th data-field="date" data-sortable="true" >Дата добавления</th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody> 
+                            {% block table %}{% endblock %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- Bootstrap core JavaScript
+    ================================================== -->
+        <!-- Placed at the end of the document so the pages load faster -->
+        <script src="{% static 'assets/js/jquery.min.js' %}"></script>
+        <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.13.1/bootstrap-table.min.js"></script>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.9.1/extensions/export/bootstrap-table-export.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.1/bootstrap3-editable/js/bootstrap-editable.min.js"></script>
+        <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+        <script src="{% static 'assets/js/ie10-viewport-bug-workaround.js' %}"></script>
+        <script src="{% static 'assets/js/bootstrap-table-editable.js' %}"></script>
+        <script>
+            
+            $(document).ready(function(){
+            })
+
+            var $table = $('#table');
+
+            var trBoldBlue = $("table");
+            $(trBoldBlue).on("click", "tr", function (){
+                $(this).toggleClass("bold-blue");
+            });
+
+            function detailFormatterfunction(index, row) {
+                var mystorage = ["<div>подробные фото</div>"];
+                var photos1 = $("th[data-field=\"photos\"]");
+                $.each(photos1, function (){
+                    mystorage.push(row.photos);
+                })
+                return mystorage;
+            }
+
+            function randomData() {
+                var startId = ~~(Math.random() * 100);
+                var rows1 = []
+                for (var i = 0; i < 10; i++) {
+                  rows1.push({
+                    numberpp: 11 + i ,
+                    typeofbuild: 'typeofbuild' + i,
+                    address: 'address' + i,
+                    phone: 'phone' + i,
+                    description: 'description' + i,
+                    photos: 'photos' + i,
+                    date_added: 'date_added' + i + new Date()
+                  })
+                }
+                return rows1
+            }
+
+
+            $("#btn-new-note").click(function(){
+                $(".addnewnote").css("display","block");
+                $("#addnoteoruser").hide();
+            })
+
+            $("#btn-new-user").click(function(){
+                $(".addnewuser").css("display","block");
+                $("#addnoteoruser").hide();
+            });
+
+            /*$("#btnnewuser").click(function(e){
+                e.preventDefault();
+                $(".addnewuser").css("display","none");
+                alert("Новый пользователь создан");
+                $("#addnoteoruser").show();
+            })*/
+            
+		</script>
+    </body>
+</html>

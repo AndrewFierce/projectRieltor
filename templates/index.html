@@ -1,0 +1,126 @@
+{% extends "indexTemplate.html" %}
+{% load widget_tweaks %}
+
+{% block form %}
+    {% if perms.rieltor.can_create_premises %}
+    <form role="form" id="addnewnote" action="{% url 'addinfo' %}" enctype="multipart/form-data" method="POST">
+        <div class="row">
+            {% csrf_token %}
+            <div class="form-group col-lg-2"> 
+                {{ form.types.label_tag }}
+                {{ form.types }}
+            </div>                         
+            <div class="form-group col-lg-3"> 
+                {{ form.address.label_tag }}
+                {{ form.address }}
+            </div>                         
+            <div class="form-group col-lg-2"> 
+                <label class="control-label" for="">Телефон:</label>
+                <input type="tel" name="telephone" class="form-control materail-input" id="id_telephone" placeholder="Введите номер" required>
+            </div>
+            <div class="form-group col-lg-2"> 
+                {{ form.description.label_tag }}
+                {{ form.description }}
+            </div>
+            <div class="form-group col-lg-2"> 
+                {{ form.photo.label_tag }}
+                {{ form.photo }}
+            </div>
+            <div class="form-group col-lg-2">
+                <button type="submit" class="btn material-btn material-btn_success material-btn_sm" id="btnnewnote">Добавить</button>
+            </div>
+        </div>
+    </form>
+    {% else%}
+        <p>К сожалению, у Вас нет прав для создания новой записи!</p>
+    {% endif %}
+{% endblock %}
+
+{% block user %}
+ {% if perms.rieltor.can_create_users %}
+  <form role="form" id="addnewuser" method="post" action="{% url 'addnewuser' %}">
+    {% csrf_token %}
+    <div class="form-group col-lg-2"> 
+        <label class="control-label" for="">Логин</label>                             
+        <input type="text" class="form-control materail-input" id="username" name="username" placeholder="Укажите логин">
+    </div>                         
+    <div class="form-group col-lg-2"> 
+        <label class="control-label" for="">E-mail</label>                             
+        <input type="email" class="form-control materail-input" id="email" name="email" placeholder="Укажите пароль">
+    </div>
+    <div class="form-group col-lg-2"> 
+        <label class="control-label" for="">Пароль</label>                             
+        <input type="password" class="form-control materail-input" id="password" name="password" placeholder="Укажите пароль">
+    </div>
+    <div class="btn-group col-lg-2">
+        <button type="submit" class="btn material-btn material-btn_success material-btn_sm" id="btnnewuser">Добавить</button>
+    </div>
+  </form>
+ {% else%}
+    <p>К сожалению, у Вас нет прав для создания нового пользователя!</p>
+ {% endif %}
+{% endblock %}
+
+{% block table %}
+    {% for premise in premises %}
+        <tr> 
+            <td>{{premise.id}}</td> 
+            {% if perms.rieltor.can_change_premises %}
+            
+            <td>{{premise.types}}" data-type="select" data-source="{% url 'typepremises' %}" data-url="{% url 'changeinfo' %}" data-original-title="Выберете тип помещения" data-params="{csrfmiddlewaretoken:'{{csrf_token}}', id: '{{premise.id}}'}</td>
+
+            <td>{{premise.address}}" data-type="text" data-url="{% url 'changeinfo' %}" data-original-title="Введите адрес помещения" data-params="{csrfmiddlewaretoken:'{{csrf_token}}', id: '{{premise.id}}'}</td>
+
+            <td>{{premise.telephone}}" data-type="text" data-url="{% url 'changeinfo' %}" data-original-title="Введите номер телефона" data-params="{csrfmiddlewaretoken:'{{csrf_token}}', id: '{{premise.id}}'}</td>
+            
+            <td>{{premise.description}}" data-type="textarea" data-url="{% url 'changeinfo' %}" data-original-title="Введите описание помещения" data-params="{csrfmiddlewaretoken:'{{csrf_token}}', id: '{{premise.id}}'}</td>
+
+            {% else%}
+            <td>{{premise.types}}</td>
+            <td>{{premise.address}}</td>
+            <td>{{premise.telephone}}</td>
+            <td>{{premise.description}}</td>
+            {% endif %}
+
+            <td>
+                <div class="container-fluid">
+                    <div class="row">
+                        {% for image in premise.photos.all %}
+                        {% if perms.rieltor.can_delete_photos %}
+                        <div class="col-md-2 col-lg-2 col-sm-1 col-xs-2">
+                            <form role="form" id="deleteimage" action="{% url 'deleteimage' %}" enctype="multipart/form-data" method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="idImage" value="{{image.id}}">
+                                <a href="{{ image.image.url }}" class="thumbnail">
+                                    <img src="{{ image.image.url }}" class="img-responsive">
+                                </a>
+                                <button type="submit" class="btn material-btn material-btn_success material-btn_sm">Удалить</button>
+                            </form>
+                        </div>
+                        {% else%}
+                        <div class="col-md-2 col-lg-2 col-sm-1 col-xs-2">
+                            <a href="{{ image.image.url }}" class="thumbnail">
+                                <img src="{{ image.image.url }}" class="img-responsive">
+                            </a>
+                        </div>
+                        {% endif %}
+                        {% endfor %}
+                        {% if perms.rieltor.can_create_photos %}
+                            <form role="form" id="addimage" action="{% url 'addimage' %}" enctype="multipart/form-data" method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="idPremise" value="{{premise.id}}">
+                                {{ form.photo }}
+                                <button type="submit" class="btn material-btn material-btn_success material-btn_sm">Добавить</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </td>
+            {% if perms.rieltor.can_change_premises %}
+                <td>{{premise.date|date:"Y-m-d"}}" data-type="date" data-format="yyyy-mm-dd" data-viewformat="dd-mm-yyyy" data-original-title="Выберете дату" data-url="{% url 'changeinfo' %}" data-params="{csrfmiddlewaretoken:'{{csrf_token}}', id: '{{premise.id}}'}</td>
+            {% else%}
+            <td>{{premise.date|date:"Y-m-d"}}</td>
+            {% endif %}
+        </tr>
+    {% endfor %}
+{% endblock %}

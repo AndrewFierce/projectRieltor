@@ -1,0 +1,66 @@
+/*BUTTONS SPLUNK*/
+.btn-critical {
+    background-image: linear-gradient(to bottom, #D85D3C, #BB4F32) !important;
+    border-color: #ac2925;
+}
+
+.btn-critical:hover {
+    background-image: linear-gradient(to bottom, #E26C4C, #BB4f32) !important;
+}
+
+.btn-high {
+    background-image: linear-gradient(to bottom, #DB8E55, #C47B44) !important;
+}
+
+.btn-high:hover {
+    background-image: linear-gradient(to bottom, #EAA069, #C47B44) !important;
+}
+
+.btn-medium {
+    background-image: linear-gradient(to bottom, #E1D53B, #CEC228) !important;
+}
+
+.btn-medium:hover {
+    background-image: linear-gradient(to bottom, #F1E63D, #CEC228) !important;
+}
+
+.btn-low {
+    background-image: linear-gradient(to bottom, #B9D577, #A5BF66) !important;
+}
+
+.btn-low:hover {
+    background-image: linear-gradient(to bottom, #CAE293, #A5BF66) !important;
+}
+
+.btn-inform {
+    background-image: linear-gradient(to bottom, #86C0E3, #6FA8CA) !important;
+}
+
+.btn-inform:hover {
+    background-image: linear-gradient(to bottom, #A6D5F1, #6FA8CA) !important;
+}
+
+#urgencybtns .btn:not(.active) {
+    border-top: solid 1px #EDEDED !important;
+    border-left: solid 1px #EDEDED !important;
+    border-right: solid 1px #EDEDED !important;
+    border-bottom: none;
+    box-shadow: none;
+    background-image: linear-gradient(to bottom, #d7d7d7, #c7c7c7) !important;
+}
+
+#urgencybtns .btn:not(.active):hover {
+    background-image: linear-gradient(to bottom, #e5e5e5, #c7c7c7);
+}
+
+#urgencybtns .btn {
+    color: #fff;
+    text-align: left;
+}
+
+.btn > a {
+    margin-left: 40px;
+    float: right;
+    text-decoration: none;
+    color: inherit;
+}
